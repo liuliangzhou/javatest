@@ -1,0 +1,25 @@
+stages:
+- name: compile
+  steps:
+  - runScriptConfig:
+      image: maven:v1
+      shellScript: mvn clean package
+- name: image
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: example/app:v1
+- name: yaml
+  steps:
+  - applyYamlConfig:
+      path: ./deployment.yaml
+- name: deploy
+  steps:
+  - applyAppConfig:
+      catalogTemplate: cattle-global-data:library-wordpress
+      version: 2.1.10
+      name: myapp
+      targetNamespace: default
+timeout: 60
+notification: {}
